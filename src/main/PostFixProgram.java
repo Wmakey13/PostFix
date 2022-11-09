@@ -116,6 +116,7 @@ public class PostFixProgram
         {
             return "#ERR";
         }
+
         String[] items = string.split(" ");
         Stack<Float> values = new Stack<>();
         for (String item : items)
@@ -142,7 +143,7 @@ public class PostFixProgram
                 }
             }
         }
-        if (values.size() > 1)
+        if (values.size() > 1 || values.isEmpty())
         {
             return "#ERR";
         }

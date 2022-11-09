@@ -235,7 +235,7 @@ public class PostFixProgramTest
         postFixProgram.calculate();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
-
+    
     @Test
     public void testErrorWhenNullCell()
     {
@@ -273,6 +273,15 @@ public class PostFixProgramTest
     }
 
     @Test
+    public void testErrorWhenNoGaps()
+    {
+        equationsByCell[0][0] = "123BC-";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
+    
+    @Test
     public void testErrorOnInvalidArguments()
     {
         equationsByCell[0][0] = "W 2 -";
@@ -292,11 +301,41 @@ public class PostFixProgramTest
         postFixProgram.calculate();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
     }
+    
+    @Test
+    public void testErrorOnMissingValues()
+    {
+        equationsByCell[0][1] = "4 3 +";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        equationsByCell[2][2] = "A1 B2 +";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
+    }
+    
+    @Test
+    public void testErrorWhenInvalidDigitsFound()
+    {
+        equationsByCell[0][0] = "3 5 7 ! + !";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
 
     @Test
     public void testErrorWhenNoOperatorsFound()
     {
         equationsByCell[0][2] = "3 4 3";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
+    }
+    
+    @Test
+    public void testErrorWhenOnlyOperatorsFound()
+    {
+        equationsByCell[0][2] = "+ - +";
         postFixProgram.setEquationsByCell(equationsByCell);
         postFixProgram.calculate();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
