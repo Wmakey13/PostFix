@@ -52,7 +52,11 @@ public class PostFixProgram
             {
                 if (equationsByCell[row][column] != null)
                 {
-                    results[row][column] = calculate(prepareString(equationsByCell[row][column]));
+                    results[row][column] = prepareAndCalculate(equationsByCell[row][column]);
+                }
+                else
+                {
+                    results[row][column] = "#ERR";
                 }
             }
         }
@@ -63,9 +67,21 @@ public class PostFixProgram
             {
                 if (results[row][column] != null && !results[row][column].matches("[0-9]+"))
                 {
-                    results[row][column] = calculate(prepareString(equationsByCell[row][column]));
+                    results[row][column] = prepareAndCalculate(equationsByCell[row][column]);
                 }
             }
+        }
+    }
+
+    public static String prepareAndCalculate(String string)
+    {
+        if (string == null || string.isEmpty() || string.equals(" "))
+        {
+            return "#ERR";
+        }
+        else
+        {
+            return calculate(prepareString(string));
         }
     }
 
@@ -96,6 +112,10 @@ public class PostFixProgram
 
     public static String calculate(String string)
     {
+        if (string == null || string.isEmpty())
+        {
+            return "#ERR";
+        }
         String[] items = string.split(" ");
         Stack<Float> values = new Stack<>();
         for (String item : items)
@@ -129,6 +149,7 @@ public class PostFixProgram
 
         BigDecimal total = new BigDecimal(Double.toString(values.pop()));
         total = total.setScale(1, RoundingMode.HALF_UP);
+
         return total.doubleValue() % 1 == 0 ? String.format("%.0f", total) : total.toString();
     }
 

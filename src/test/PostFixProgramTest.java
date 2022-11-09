@@ -228,9 +228,45 @@ public class PostFixProgramTest
     }
 
     @Test
+    public void testErrorWhenEmptyCell()
+    {
+        equationsByCell[0][0] = "";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
+
+    @Test
+    public void testErrorWhenNullCell()
+    {
+        equationsByCell[0][0] = null;
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
+
+    @Test
     public void testErrorWhenTooManyOperatorsFound()
     {
         equationsByCell[0][0] = "3 5 7 + - * - *";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
+
+    @Test
+    public void testErrorWhenNumberIsAtTheEnd()
+    {
+        equationsByCell[0][0] = "3 5 7 + - + 7";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.calculate();
+        assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
+    }
+
+    @Test
+    public void testErrorWhenNumberAfterOperators()
+    {
+        equationsByCell[0][0] = "+ - + 3 5 7 7";
         postFixProgram.setEquationsByCell(equationsByCell);
         postFixProgram.calculate();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
