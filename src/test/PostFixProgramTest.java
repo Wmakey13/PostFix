@@ -13,7 +13,7 @@ public class PostFixProgramTest
     String[][] successData = new String[3][3];
 
     @Test
-    public void testRunMainArgsMethod()
+    public void testRunMainArgsMethodWithCSVFile()
     {
         setSuccessTestData();
         String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/SWE.csv" };
@@ -31,11 +31,47 @@ public class PostFixProgramTest
     }
 
     @Test
-    public void testRunEachMethod()
+    public void testRunEachMethodWithCSVFile()
     {
         setSuccessTestData();
         postFixProgram.readCSVFile("C:/Users/WK052226/PGit/PostFix/src/test/SWE.csv");
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
+        for (int row = 0; row < equationsByCell.length; row++)
+        {
+            for (int column = 0; column < equationsByCell[row].length; column++)
+            {
+                if (postFixProgram.getResults()[row][column] != null)
+                {
+                    assertTrue(postFixProgram.getResults()[row][column].equals(successData[row][column]));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testRunMainArgsMethodTxtFile()
+    {
+        setSuccessTestData();
+        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/SWE.txt" };
+        postFixProgram.main(args);
+        for (int row = 0; row < equationsByCell.length; row++)
+        {
+            for (int column = 0; column < equationsByCell[row].length; column++)
+            {
+                if (postFixProgram.getResults()[row][column] != null)
+                {
+                    assertTrue(postFixProgram.getResults()[row][column].equals(successData[row][column]));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testRunEachMethodWithTxtFile()
+    {
+        setSuccessTestData();
+        postFixProgram.readCSVFile("C:/Users/WK052226/PGit/PostFix/src/test/SWE.txt");
+        postFixProgram.traverseCells();
         for (int row = 0; row < equationsByCell.length; row++)
         {
             for (int column = 0; column < equationsByCell[row].length; column++)
@@ -53,7 +89,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("7"));
     }
@@ -63,7 +99,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 *";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("12"));
     }
@@ -73,7 +109,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("1"));
     }
@@ -83,7 +119,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 2 /";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("2"));
     }
@@ -93,7 +129,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "-4 3 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("-1"));
     }
@@ -103,7 +139,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "-4 3 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("-7"));
     }
@@ -113,7 +149,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "-4 3 *";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("-12"));
     }
@@ -123,7 +159,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "-4 2 /";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("-2"));
     }
@@ -133,7 +169,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4.5 3.7 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("8.2"));
     }
@@ -143,7 +179,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4.5 3.7 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("0.8"));
     }
@@ -153,7 +189,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4.5 3.7 *";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("16.6"));
     }
@@ -163,7 +199,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "8.8 2.2 /";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("4"));
     }
@@ -173,7 +209,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "105 1.4 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("103.6"));
     }
@@ -183,7 +219,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 + 6 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("1"));
     }
@@ -193,7 +229,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 6 + *";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("36"));
     }
@@ -203,7 +239,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 6 5 7 + + + + ";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("25"));
     }
@@ -213,18 +249,28 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "40 30 60 50 70 + - + * ";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("-1200"));
     }
 
     @Test
-    public void testPrepareStringMethodRetrievesValues()
+    public void testCodeRetrievesValuesFromCells()
     {
         equationsByCell[0][0] = "4 3 +";
         equationsByCell[1][0] = "3 2 +";
+        equationsByCell[2][0] = "A1 A2 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
-        assertTrue(postFixProgram.prepareString("A1 A2 +").equals("7 5 + "));
+        postFixProgram.traverseCells();
+        assertTrue(postFixProgram.getResults()[2][0].equals("12"));
+    }
+
+    @Test
+    public void testCodeRemovesSpacesBeforeCalculation()
+    {
+        equationsByCell[0][0] = "     4  3    + ";
+        postFixProgram.setEquationsByCell(equationsByCell);
+        postFixProgram.traverseCells();
+        assertTrue(postFixProgram.getResults()[0][0].equals("7"));
     }
 
     @Test
@@ -232,16 +278,16 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
-    
+
     @Test
     public void testErrorWhenNullCell()
     {
         equationsByCell[0][0] = null;
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -250,7 +296,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "3 5 7 + - * - *";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -259,7 +305,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "3 5 7 + - + 7";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -268,7 +314,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "+ - + 3 5 7 7";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -277,16 +323,16 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "123BC-";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
-    
+
     @Test
     public void testErrorOnInvalidArguments()
     {
         equationsByCell[0][0] = "W 2 -";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -295,31 +341,31 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "4 3 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         equationsByCell[0][2] = "A1 W +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
     }
-    
+
     @Test
     public void testErrorOnMissingValues()
     {
         equationsByCell[0][1] = "4 3 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         equationsByCell[2][2] = "A1 B2 +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
     }
-    
+
     @Test
     public void testErrorWhenInvalidDigitsFound()
     {
         equationsByCell[0][0] = "3 5 7 ! + !";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
@@ -328,16 +374,16 @@ public class PostFixProgramTest
     {
         equationsByCell[0][2] = "3 4 3";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
     }
-    
+
     @Test
     public void testErrorWhenOnlyOperatorsFound()
     {
         equationsByCell[0][2] = "+ - +";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][2].equals("#ERR"));
     }
 
@@ -346,7 +392,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "40 30 60 50 70 + + + ";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
 
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
@@ -356,7 +402,7 @@ public class PostFixProgramTest
     {
         equationsByCell[0][0] = "A1";
         postFixProgram.setEquationsByCell(equationsByCell);
-        postFixProgram.calculate();
+        postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 

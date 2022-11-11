@@ -12,12 +12,12 @@ import java.util.Stack;
 public class PostFixProgram
 {
     static String[][] equationsByCell;
-    public static String[][] results;
+    static String[][] results;
 
     public static void main(String[] args)
     {
         readCSVFile(args[0]);
-        calculate();
+        traverseCells();
 
         for (int row = 0; row < equationsByCell.length; row++)
         {
@@ -41,7 +41,7 @@ public class PostFixProgram
         }
     }
 
-    public static void calculate()
+    public static void traverseCells()
     {
         int size = equationsByCell.length;
         results = new String[size][size];
@@ -52,7 +52,7 @@ public class PostFixProgram
             {
                 if (equationsByCell[row][column] != null)
                 {
-                    results[row][column] = prepareAndCalculate(equationsByCell[row][column]);
+                    results[row][column] = calculateEquations(equationsByCell[row][column]);
                 }
                 else
                 {
@@ -67,52 +67,15 @@ public class PostFixProgram
             {
                 if (results[row][column] != null && !results[row][column].matches("[0-9]+"))
                 {
-                    results[row][column] = prepareAndCalculate(equationsByCell[row][column]);
+                    results[row][column] = calculateEquations(equationsByCell[row][column]);
                 }
             }
         }
     }
 
-    public static String prepareAndCalculate(String string)
+    public static String calculateEquations(String string)
     {
         if (string == null || string.isEmpty() || string.equals(" "))
-        {
-            return "#ERR";
-        }
-        else
-        {
-            return calculate(prepareString(string));
-        }
-    }
-
-    public static String prepareString(String string)
-    {
-        StringBuilder preparedString = new StringBuilder();
-        String[] items = string.split(" ");
-        for (String item : items)
-        {
-            if (item.length() == 2 && item.matches(".*[a-zA-Z].*"))
-            {
-                String[] array = item.split("");
-                char[] charArray = item.toCharArray();
-                int column = Character.toLowerCase(charArray[0]) - 'a';
-                int row = Integer.parseInt(array[1]) - 1;
-                if (results[row][column] != null)
-                {
-                    preparedString.append(results[row][column] + " ");
-                }
-            }
-            else
-            {
-                preparedString.append(item + " ");
-            }
-        }
-        return preparedString.toString();
-    }
-
-    public static String calculate(String string)
-    {
-        if (string == null || string.isEmpty())
         {
             return "#ERR";
         }
@@ -121,25 +84,39 @@ public class PostFixProgram
         Stack<Float> values = new Stack<>();
         for (String item : items)
         {
-            if (item.equals("+") || item.equals("/") || item.equals("*") || item.equals("-"))
+            if (!item.isEmpty())
             {
-                if (values.size() < 2)
+                if (item.length() == 2 && item.matches(".*[a-zA-Z].*"))
                 {
-                    return "#ERR";
+                    String[] array = item.split("");
+                    char[] charArray = item.toCharArray();
+                    int column = Character.toLowerCase(charArray[0]) - 'a';
+                    int row = Integer.parseInt(array[1]) - 1;
+                    if (results[row][column] != null && !results[row][column].equals("#ERR"))
+                    {
+                        values.add(Float.parseFloat(results[row][column]));
+                    }
                 }
-                float a = values.pop();
-                float b = values.pop();
-                values.push(calculateItems(a, b, item));
-            }
-            else
-            {
-                try
+                else if (item.equals("+") || item.equals("/") || item.equals("*") || item.equals("-"))
                 {
-                    values.add(Float.parseFloat(item));
+                    if (values.size() < 2)
+                    {
+                        return "#ERR";
+                    }
+                    float a = values.pop();
+                    float b = values.pop();
+                    values.push(calculateItems(a, b, item));
                 }
-                catch (Exception e)
+                else
                 {
-                    return "#ERR";
+                    try
+                    {
+                        values.add(Float.parseFloat(item));
+                    }
+                    catch (Exception e)
+                    {
+                        return "#ERR";
+                    }
                 }
             }
         }
@@ -150,7 +127,6 @@ public class PostFixProgram
 
         BigDecimal total = new BigDecimal(Double.toString(values.pop()));
         total = total.setScale(1, RoundingMode.HALF_UP);
-
         return total.doubleValue() % 1 == 0 ? String.format("%.0f", total) : total.toString();
     }
 
