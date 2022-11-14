@@ -1,32 +1,30 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class PostFixProgram
 {
     static String[][] equationsByCell;
     static String[][] results;
+    static int rowNumber;
+    static int columnNumber;
 
     public static void main(String[] args)
     {
-        readCSVFile(args[0]);
+        String filePath = args[0];
+        readCSVFile(filePath);
         traverseCells();
-
-        for (int row = 0; row < equationsByCell.length; row++)
-        {
-            for (int column = 0; column < equationsByCell[row].length; column++)
-            {
-                System.out.print(results[row][column] + ",");
-            }
-            System.out.println("");
-        }
+        writeCSVFile(filePath);
     }
 
     public static void readCSVFile(String csvFile)
@@ -41,14 +39,25 @@ public class PostFixProgram
         }
     }
 
+    public static void writeCSVFile(String csvFile)
+    {
+        try
+        {
+            writeFile(csvFile);
+        }
+        catch (Exception e)
+        {
+            System.out.println("File Not writable");
+        }
+    }
+
     public static void traverseCells()
     {
-        int size = equationsByCell.length;
-        results = new String[size][size];
+        results = new String[rowNumber][columnNumber];
 
-        for (int row = 0; row < equationsByCell.length; row++)
+        for (int row = 0; row < rowNumber; row++)
         {
-            for (int column = 0; column < equationsByCell[row].length; column++)
+            for (int column = 0; column < columnNumber; column++)
             {
                 if (equationsByCell[row][column] != null)
                 {
@@ -61,9 +70,9 @@ public class PostFixProgram
             }
         }
 
-        for (int row = 0; row < equationsByCell.length; row++)
+        for (int row = 0; row < rowNumber; row++)
         {
-            for (int column = 0; column < equationsByCell[row].length; column++)
+            for (int column = 0; column < columnNumber; column++)
             {
                 if (results[row][column] != null && !results[row][column].matches("[0-9]+"))
                 {
@@ -92,7 +101,8 @@ public class PostFixProgram
                     char[] charArray = item.toCharArray();
                     int column = Character.toLowerCase(charArray[0]) - 'a';
                     int row = Integer.parseInt(array[1]) - 1;
-                    if (results[row][column] != null && !results[row][column].equals("#ERR"))
+                    if (row < rowNumber && column < columnNumber && results[row][column] != null
+                            && !results[row][column].equals("#ERR"))
                     {
                         values.add(Float.parseFloat(results[row][column]));
                     }
@@ -149,23 +159,27 @@ public class PostFixProgram
 
     public static String[][] parseFile(String fileString) throws FileNotFoundException, IOException
     {
-        String[][] numbers = new String[3][3];
+        String[][] numbers = new String[10][10];
         File file = new File(fileString);
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line = "";
-        int rowNumber = 0;
-        int columnNumber = 0;
+        rowNumber = 0;
         while ((line = bufferedReader.readLine()) != null)
         {
             String[] itemsLine;
             itemsLine = line.split(",");
+            if (itemsLine.length > columnNumber)
+            {
+                columnNumber = itemsLine.length;
+            }
+            int tempColumn = 0;
             for (String item : itemsLine)
             {
                 if (item != null)
                 {
-                    numbers[rowNumber][columnNumber] = item;
-                    columnNumber++;
+                    numbers[rowNumber][tempColumn] = item;
+                    tempColumn++;
                 }
                 else
                 {
@@ -173,16 +187,45 @@ public class PostFixProgram
                 }
             }
             rowNumber++;
-            columnNumber = 0;
         }
         bufferedReader.close();
+
         return numbers;
     }
 
+    public static void writeFile(String fileString) throws FileNotFoundException, IOException
+    {
+        String filePath = fileString.substring(0, fileString.lastIndexOf("."));
+        File file = new File(filePath + "Output.csv");
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter bufferedWriter = new BufferedWriter(fw);
+
+        for (int row = 0; row < rowNumber; row++)
+        {
+            StringBuilder resultLine = new StringBuilder();
+            for (int column = 0; column < columnNumber; column++)
+            {
+                resultLine.append(results[row][column]);
+                if (column < results[row].length - 1)
+                {
+                    resultLine.append(",");
+                }
+            }
+            String resultsLine = resultLine.toString();
+            bufferedWriter.write(resultsLine);
+            bufferedWriter.newLine();
+            System.out.println(resultsLine);
+        }
+
+        bufferedWriter.close();
+    }
+
     // For Testing Purposes
-    public void setEquationsByCell(String[][] testEquations)
+    public void setEquationsByCell(String[][] testEquations, int rowNumber, int columnNumber)
     {
         equationsByCell = testEquations;
+        this.rowNumber = rowNumber;
+        this.columnNumber = columnNumber;
     }
 
     public String[][] getResults()
