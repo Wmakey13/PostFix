@@ -162,9 +162,11 @@ public class PostFixProgram
         {
             for (int column = 0; column < columnNumber; column++)
             {
-                if (results[row][column] != null && !results[row][column].matches("[0-9]+"))
+                if (results[row][column] != null && results[row][column].matches(".*[a-zA-Z]+.*"))
                 {
                     results[row][column] = calculateEquations(equationsByCell[row][column]);
+                    // System.out.println("Row: " + row + " Column: " + column + " Equation: "
+                    // + equationsByCell[row][column] + " Output: " + results[row][column]);
                 }
             }
         }
