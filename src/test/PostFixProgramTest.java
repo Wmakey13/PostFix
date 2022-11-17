@@ -70,6 +70,36 @@ public class PostFixProgramTest
     }
 
     @Test
+    public void testSizeOfResultsMatchesSizeFile()
+    {
+        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/OneValue.csv" };
+        postFixProgram.main(args);
+        String[][] results = postFixProgram.getResults();
+        assertTrue(results.length == 1);
+        assertTrue(results[0].length == 1);
+    }
+
+    @Test
+    public void testSizeOfResultsMatchesSizeFile5By2()
+    {
+        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/5by2.csv" };
+        postFixProgram.main(args);
+        String[][] results = postFixProgram.getResults();
+        assertTrue(results.length == 2);
+        assertTrue(results[0].length == 5);
+    }
+
+    @Test
+    public void testSizeOfResultsMatchesSizeOfLargeFile()
+    {
+        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/SWELarge.csv" };
+        postFixProgram.main(args);
+        String[][] results = postFixProgram.getResults();
+        assertTrue(results.length == 230);
+        assertTrue(results[0].length == 320);
+    }
+
+    @Test
     public void testStandardAddition()
     {
         equationsByCell[0][0] = "4 3 +";
@@ -155,7 +185,7 @@ public class PostFixProgramTest
         equationsByCell[0][0] = "4.5 3.7 +";
         postFixProgram.setEquationsByCell(equationsByCell, 1, 1);
         postFixProgram.traverseCells();
-
+        System.out.println(4.5 + 3.7 + "");
         assertTrue(postFixProgram.getResults()[0][0].equals("8.2"));
     }
 
@@ -165,7 +195,7 @@ public class PostFixProgramTest
         equationsByCell[0][0] = "4.5 3.7 -";
         postFixProgram.setEquationsByCell(equationsByCell, 1, 1);
         postFixProgram.traverseCells();
-
+        System.out.println(postFixProgram.getResults()[0][0]);
         assertTrue(postFixProgram.getResults()[0][0].equals("0.8"));
     }
 
@@ -175,8 +205,8 @@ public class PostFixProgramTest
         equationsByCell[0][0] = "4.5 3.7 *";
         postFixProgram.setEquationsByCell(equationsByCell, 1, 1);
         postFixProgram.traverseCells();
-
-        assertTrue(postFixProgram.getResults()[0][0].equals("16.6"));
+        System.out.println(postFixProgram.getResults()[0][0]);
+        assertTrue(postFixProgram.getResults()[0][0].equals("16.7"));
     }
 
     @Test
@@ -247,6 +277,18 @@ public class PostFixProgramTest
         postFixProgram.setEquationsByCell(equationsByCell, 3, 1);
         postFixProgram.traverseCells();
         assertTrue(postFixProgram.getResults()[2][0].equals("12"));
+    }
+
+    @Test
+    public void testCodeRetrievesValuesFromCellsWithDecimals()
+    {
+        equationsByCell[0][0] = "4 3 +";
+        equationsByCell[1][0] = "3 2 +";
+        equationsByCell[2][0] = "A1 A2 7.5 + -";
+        postFixProgram.setEquationsByCell(equationsByCell, 3, 1);
+        postFixProgram.traverseCells();
+        System.out.println(postFixProgram.getResults()[2][0]);
+        assertTrue(postFixProgram.getResults()[2][0].equals("-5.5"));
     }
 
     @Test
@@ -325,8 +367,6 @@ public class PostFixProgramTest
     public void testErrorOnLaterInvalidArguments()
     {
         equationsByCell[0][0] = "4 3 +";
-        // postFixProgram.setEquationsByCell(equationsByCell, 1, 1);
-        // postFixProgram.traverseCells();
         equationsByCell[0][1] = "A1 W +";
         postFixProgram.setEquationsByCell(equationsByCell, 1, 2);
         postFixProgram.traverseCells();
@@ -389,26 +429,6 @@ public class PostFixProgramTest
         assertTrue(postFixProgram.getResults()[0][0].equals("#ERR"));
     }
 
-    @Test
-    public void testSizeOfResultsMatchesSizeFile()
-    {
-        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/OneValue.csv" };
-        postFixProgram.main(args);
-        String[][] results = postFixProgram.getResults();
-        assertTrue(results.length == 1);
-        assertTrue(results[0].length == 1);
-    }
-
-    @Test
-    public void testSizeOfResultsMatchesSizeFile5By2()
-    {
-        String[] args = { "C:/Users/WK052226/PGit/PostFix/src/test/5by2.csv" };
-        postFixProgram.main(args);
-        String[][] results = postFixProgram.getResults();
-        assertTrue(results.length == 2);
-        assertTrue(results[0].length == 5);
-    }
-    
     public void setSuccessTestData()
     {
         successData[0][0] = "10";

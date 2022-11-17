@@ -7,9 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class PostFixProgram
@@ -27,6 +28,7 @@ public class PostFixProgram
         writeCSVFile(filePath);
     }
 
+    // Parsing
     public static void readCSVFile(String csvFile)
     {
         try
@@ -39,6 +41,62 @@ public class PostFixProgram
         }
     }
 
+    public static String[][] parseFile(String fileString) throws FileNotFoundException, IOException
+    {
+        File file = new File(fileString);
+        firstParse(file);
+        return secondParse(file);
+    }
+
+    public static void firstParse(File file) throws IOException
+    {
+        rowNumber = 0;
+        columnNumber = 0;
+        FileReader fileReader = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = "";
+        while ((line = bufferedReader.readLine()) != null)
+        {
+            String[] itemsLine = line.split(",");
+            if (itemsLine.length > columnNumber)
+            {
+                columnNumber = itemsLine.length;
+            }
+            rowNumber++;
+        }
+        bufferedReader.close();
+    }
+
+    public static String[][] secondParse(File file) throws IOException
+    {
+        FileReader fileReader = new FileReader(file);
+        String[][] numbers = new String[rowNumber][columnNumber];
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = "";
+        int tempRow = 0;
+        while ((line = bufferedReader.readLine()) != null)
+        {
+            String[] itemsLine = line.split(",");
+            int tempColumn = 0;
+            for (String item : itemsLine)
+            {
+                if (item != null)
+                {
+                    numbers[tempRow][tempColumn] = item;
+                    tempColumn++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            tempRow++;
+        }
+        bufferedReader.close();
+        return numbers;
+    }
+
+    // Writing
     public static void writeCSVFile(String csvFile)
     {
         try
@@ -51,6 +109,34 @@ public class PostFixProgram
         }
     }
 
+    public static void writeFile(String fileString) throws FileNotFoundException, IOException
+    {
+        String filePath = fileString.substring(0, fileString.lastIndexOf("."));
+        File file = new File(filePath + "Output.csv");
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter bufferedWriter = new BufferedWriter(fw);
+
+        for (int row = 0; row < rowNumber; row++)
+        {
+            StringBuilder resultLine = new StringBuilder();
+            for (int column = 0; column < columnNumber; column++)
+            {
+                resultLine.append(results[row][column]);
+                if (column < results[row].length - 1)
+                {
+                    resultLine.append(",");
+                }
+            }
+            String resultsLine = resultLine.toString();
+            bufferedWriter.write(resultsLine);
+            bufferedWriter.newLine();
+            System.out.println(resultsLine);
+        }
+
+        bufferedWriter.close();
+    }
+
+    // Traversing and Calculating
     public static void traverseCells()
     {
         results = new String[rowNumber][columnNumber];
@@ -62,6 +148,8 @@ public class PostFixProgram
                 if (equationsByCell[row][column] != null)
                 {
                     results[row][column] = calculateEquations(equationsByCell[row][column]);
+                    // System.out.println("Row: " + row + " Column: " + column + " Equation: "
+                    // + equationsByCell[row][column] + " Output: " + results[row][column]);
                 }
                 else
                 {
@@ -90,7 +178,7 @@ public class PostFixProgram
         }
 
         String[] items = string.split(" ");
-        Stack<Float> values = new Stack<>();
+        Stack<Double> values = new Stack<>();
         for (String item : items)
         {
             if (!item.isEmpty())
@@ -104,7 +192,7 @@ public class PostFixProgram
                     if (row < rowNumber && column < columnNumber && results[row][column] != null
                             && !results[row][column].equals("#ERR"))
                     {
-                        values.add(Float.parseFloat(results[row][column]));
+                        values.add(Double.parseDouble(results[row][column]));
                     }
                 }
                 else if (item.equals("+") || item.equals("/") || item.equals("*") || item.equals("-"))
@@ -113,15 +201,15 @@ public class PostFixProgram
                     {
                         return "#ERR";
                     }
-                    float a = values.pop();
-                    float b = values.pop();
+                    double a = values.pop();
+                    double b = values.pop();
                     values.push(calculateItems(a, b, item));
                 }
                 else
                 {
                     try
                     {
-                        values.add(Float.parseFloat(item));
+                        values.add(Double.parseDouble(item));
                     }
                     catch (Exception e)
                     {
@@ -140,7 +228,7 @@ public class PostFixProgram
         return total.doubleValue() % 1 == 0 ? String.format("%.0f", total) : total.toString();
     }
 
-    public static float calculateItems(float a, float b, String c)
+    public static double calculateItems(double a, double b, String c)
     {
         switch (c)
         {
@@ -155,69 +243,6 @@ public class PostFixProgram
             default:
                 return 0;
         }
-    }
-
-    public static String[][] parseFile(String fileString) throws FileNotFoundException, IOException
-    {
-        String[][] numbers = new String[10][10];
-        File file = new File(fileString);
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = "";
-        rowNumber = 0;
-        while ((line = bufferedReader.readLine()) != null)
-        {
-            String[] itemsLine;
-            itemsLine = line.split(",");
-            if (itemsLine.length > columnNumber)
-            {
-                columnNumber = itemsLine.length;
-            }
-            int tempColumn = 0;
-            for (String item : itemsLine)
-            {
-                if (item != null)
-                {
-                    numbers[rowNumber][tempColumn] = item;
-                    tempColumn++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            rowNumber++;
-        }
-        bufferedReader.close();
-
-        return numbers;
-    }
-
-    public static void writeFile(String fileString) throws FileNotFoundException, IOException
-    {
-        String filePath = fileString.substring(0, fileString.lastIndexOf("."));
-        File file = new File(filePath + "Output.csv");
-        FileWriter fw = new FileWriter(file);
-        BufferedWriter bufferedWriter = new BufferedWriter(fw);
-
-        for (int row = 0; row < rowNumber; row++)
-        {
-            StringBuilder resultLine = new StringBuilder();
-            for (int column = 0; column < columnNumber; column++)
-            {
-                resultLine.append(results[row][column]);
-                if (column < results[row].length - 1)
-                {
-                    resultLine.append(",");
-                }
-            }
-            String resultsLine = resultLine.toString();
-            bufferedWriter.write(resultsLine);
-            bufferedWriter.newLine();
-            System.out.println(resultsLine);
-        }
-
-        bufferedWriter.close();
     }
 
     // For Testing Purposes
