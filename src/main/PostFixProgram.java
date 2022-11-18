@@ -179,6 +179,7 @@ public class PostFixProgram
             return "#ERR";
         }
 
+        int decimalPlaces = 1;
         String[] items = string.split(" ");
         Stack<Double> values = new Stack<>();
         for (String item : items)
@@ -211,6 +212,14 @@ public class PostFixProgram
                 {
                     try
                     {
+                        if (item.contains("."))
+                        {
+                            String[] decimals = item.split("\\.");
+                            if (decimals[1].length() > decimalPlaces)
+                            {
+                                decimalPlaces = decimals[1].length();
+                            }
+                        }
                         values.add(Double.parseDouble(item));
                     }
                     catch (Exception e)
@@ -226,8 +235,9 @@ public class PostFixProgram
         }
 
         BigDecimal total = new BigDecimal(Double.toString(values.pop()));
-        total = total.setScale(1, RoundingMode.HALF_UP);
-        return total.doubleValue() % 1 == 0 ? String.format("%.0f", total) : total.toString();
+        total = total.setScale(decimalPlaces, RoundingMode.HALF_UP);
+        String format = "%." + (decimalPlaces - 1) + "f";
+        return total.doubleValue() % 1 == 0 ? String.format(format, total) : total.toString();
     }
 
     public static double calculateItems(double a, double b, String c)
